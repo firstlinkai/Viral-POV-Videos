@@ -1,0 +1,629 @@
+{
+  "name": "Viral-POV-Videos",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1920,
+        260
+      ],
+      "id": "bbc2a6c5-b974-4859-a053-4528d575c49a",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1L1dEkCs5VRqZEGFgttOh52cVvZ9uhfItd8YFlbJThAY",
+          "mode": "list",
+          "cachedResultName": "Short Video Idea",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1L1dEkCs5VRqZEGFgttOh52cVvZ9uhfItd8YFlbJThAY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1L1dEkCs5VRqZEGFgttOh52cVvZ9uhfItd8YFlbJThAY/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Approval Status",
+              "lookupValue": "Approved"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -1740,
+        260
+      ],
+      "id": "aaad221d-a600-44ba-8e80-6210280d029a",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "wXo6rGxuYoHHk9Yc",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.piapi.ai/api/v1/task",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={\n    \"model\": \"Qubico/flux1-dev\",\n    \"task_type\": \"txt2img\",\n    \"input\": {\n        \"prompt\": \"{{ $json.output }}\",\n        \"width\": 720, \n        \"height\": 1280\n    } \n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1240,
+        260
+      ],
+      "id": "10a1b31c-bf79-49ee-ac37-fe39bfdf7a78",
+      "name": "PyAPI Post",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "lsKMajpupOkqb2di",
+          "name": "pyAPI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.piapi.ai/api/v1/task/{{ $json.data.task_id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1040,
+        260
+      ],
+      "id": "b327a5e2-b454-49ef-b225-e05c17fe1c45",
+      "name": "PyAPI Get",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "lsKMajpupOkqb2di",
+          "name": "pyAPI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "5bb4060e-2f51-43f2-933b-4aee47b340b5",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "=SUCCEEDED",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -160,
+        240
+      ],
+      "id": "f1b5b12c-c206-423b-9a26-ed833fb45706",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.dev.runwayml.com/v1/tasks/{{ $json.id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer key_0d03cbbe14045a5ffc6bb3d2f1eb482f4c03aa44ff76b507695c92555f2b54e4c9064f3f806851c953204a2e3a59eea3eb2d08dab5c0452c0cab12522751ee79"
+            },
+            {
+              "name": "X-Runway-Version",
+              "value": "2024-11-06"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -380,
+        240
+      ],
+      "id": "64f1a258-08df-41ce-a0fb-c90924dfbe9e",
+      "name": "Runway Task API"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.dev.runwayml.com/v1/image_to_video",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer key_0d03cbbe14045a5ffc6bb3d2f1eb482f4c03aa44ff76b507695c92555f2b54e4c9064f3f806851c953204a2e3a59eea3eb2d08dab5c0452c0cab12522751ee79"
+            },
+            {
+              "name": "X-Runway-Version",
+              "value": "2024-11-06"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "promptImage",
+              "value": "={{ $json.data.output.image_url }}"
+            },
+            {
+              "name": "seed",
+              "value": 4294967295
+            },
+            {
+              "name": "model",
+              "value": "gen4_turbo"
+            },
+            {
+              "name": "promptText",
+              "value": "string"
+            },
+            {
+              "name": "duration",
+              "value": 5
+            },
+            {
+              "name": "ratio",
+              "value": "720:1280"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -600,
+        240
+      ],
+      "id": "5ea54945-e558-4cef-9d1a-1ea73ad3725d",
+      "name": "Runway POST"
+    },
+    {
+      "parameters": {
+        "amount": 60
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -40,
+        460
+      ],
+      "id": "7ea05566-bb66-49f1-a2d7-168d0fe761d8",
+      "name": "Wait",
+      "webhookId": "aff551c9-50ad-49ba-8892-c4589059d999"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1L1dEkCs5VRqZEGFgttOh52cVvZ9uhfItd8YFlbJThAY",
+          "mode": "list",
+          "cachedResultName": "Short Video Idea",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1L1dEkCs5VRqZEGFgttOh52cVvZ9uhfItd8YFlbJThAY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uD62X9QvfemgxOcYV4PJwJV6TMilkm3ZcpBPeBwgFcQ/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Video URL": "={{ $json.output[0] }}",
+            "Image URL": "={{ $('PyAPI Get').item.json.data.output.image_url }}",
+            "Idea": "{{ $json.Idea }}"
+          },
+          "matchingColumns": [
+            "Idea"
+          ],
+          "schema": [
+            {
+              "id": "Idea",
+              "displayName": "Idea",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Approval Status",
+              "displayName": "Approval Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Image URL",
+              "displayName": "Image URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Video URL",
+              "displayName": "Video URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        60,
+        220
+      ],
+      "id": "ca674260-b1b1-4ce4-8600-e26faffaac99",
+      "name": "Google Sheets1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "wXo6rGxuYoHHk9Yc",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "6f4e27da-e844-4e20-9a1e-2a3c26c5621b",
+              "leftValue": "={{ $json.data.status }}",
+              "rightValue": "completed",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "9938e06c-7061-41ff-9690-a87980952926",
+              "leftValue": "",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -860,
+        260
+      ],
+      "id": "49435d5c-4d49-4e6c-aec1-d95aa48f95bb",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "amount": 60
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -740,
+        460
+      ],
+      "id": "58430cbd-3b49-4679-ac41-8b36a9220669",
+      "name": "Wait1",
+      "webhookId": "b2ba1e26-438f-4d51-8cea-99bfe32eca1e"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.1,
+      "position": [
+        -1600,
+        480
+      ],
+      "id": "19fb178e-0243-4324-85c8-a882797d4cff",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "IFuS0OMBdaTai4J9",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=  Here is the short user-provided description {{ $json.Idea }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=First-Person POV Image & Video Prompt Generator (Single Input – Unified Output)\\n\\n\n\n🛠 Task:\\nYou are an advanced AI specializing in transforming a short user-provided description into a hyper-realistic, cinematic first-person POV prompt. This single prompt is optimized for both text-to-image and text-to-video AI models such as Flux, MidJourney, Stable Diffusion, Runway Gen-3 Alpha, and Pika Labs.\\n\\n\n\n📌 The final output must be a single, AI-ready paragraph that:\n\n\\n\\n\n✅ Strictly adheres to first-person POV, ensuring immersion.\\n\n✅ Begins with the described image and smoothly transitions into background animation details for video.\\n\n✅ Includes visible limbs interacting with the environment.\\n\n✅ Describes textures, lighting, sensory details, and environmental motion.\\n\n✅ Follows structured formatting for AI consistency.\\n\n✅ Stays under 950 characters.\\n\\n📘 POV Rules & Guidelines for Generating Prompts\\n\n✅ First-Person Perspective Only\\nThe viewer must feel like they are experiencing the moment firsthand.\\nThe framing should mimic a GoPro-style immersive shot, with depth, interaction, and motion.\\n\\n\n✅ Visible Limbs for Immersion\\nA hand, foot, or both must be visible in the foreground, actively engaging with the environment.\\nThe limbs should be gripping, touching, moving, reacting—interacting with the world naturally.\\n\\n\n✅ World Interaction\\nThe body should physically interact with objects (e.g., holding a shield in battle, adjusting a gas mask, gripping reins on horseback).\\nThe world must feel alive and reactive to the viewer’s presence.\\n\\n\n✅ Sensory & Cinematic Detail\\nThe scene should engage multiple senses:\\n\nSight (lighting, colors, scale)\\n\nTouch (heat, cold, textures)\\n\nSound (distant echoes, wind howling, gunfire)\\n\\n\n📌 User Input (Single Prompt Field Example)\n\\nExample Input: POV: You’re a Knight in Battle\\n\\n\n📌 AI-Generated Output (Example for “POV: You’re a Knight in Battle”)\\n\nPOV: You’re a Knight in Battle\\n\nFirst-person view POV GoPro shot of my gauntleted hands gripping the hilt of a longsword, the steel gleaming under the afternoon sun. Blood and mud splatter my armor as I brace for the enemy’s charge. My heartbeat pounds in my ears, my grip tightening as I prepare to strike. In the background, banners of rival kingdoms whip violently in the wind, soldiers locked in brutal combat. Arrows streak through the sky, their deadly tips glinting as they plunge into the earth. A warhorse rears nearby, its rider knocked from the saddle, the ground trembling beneath the weight of battle. Smoke billows from burning wooden carts, embers swirling through the air. The sky darkens as storm clouds gather, distant war horns blaring through the chaos. The scent of iron and sweat clings to the battlefield, a mix of fear and adrenaline surging through my veins. A warrior lunges—my blade meets his, sparks flying as the battle rages on.\\n\\n📌 \n\nAI-Generated Output (Example for “POV: You Wake Up as Cleopatra in Ancient Egypt”)\\n\nPOV: You Wake Up as Cleopatra in Ancient Egypt\\n\nFirst-person view POV GoPro shot of my elegant hands delicately adjusting a bejeweled golden collar, turquoise gemstones catching the warm glow of candlelight. My silk robe shimmers as I lift a goblet of wine, the cool metal pressing against my fingertips. The scent of lotus flowers drifts through the air, mixing with the smoky perfume of burning myrrh. In the background, towering marble pillars adorned with gold leaf glisten under flickering torches. Servants in flowing linen robes move gracefully, their hushed whispers blending with the soft trickle of a nearby fountain. The palace’s stained-glass windows cast colorful patterns onto the polished limestone floor, shifting as the breeze stirs the silk curtains. Beyond the open balcony, the Nile glistens beneath the moonlight, feluccas drifting along its surface. A tame leopard lounges beside my throne, its tail flicking lazily. A distant drum beats—a call for my presence in the royal court.\\n📌 \nAI-Generated Output (Example for “POV: You’re a Viking at Sea”)\\n\nPOV: You’re a Viking at Sea\\n\nFirst-person view POV GoPro shot of my calloused hands gripping the rough wooden oar, veins straining as I pull through the churning icy waters. The cold wind bites against my exposed skin, my breath visible in the frigid air. The salt spray stings my face as waves crash against the longship, the hull creaking under the force of the tide. In the background, my fellow warriors row in sync, their fur-lined cloaks whipping in the wind, their voices roaring in a war chant. A sea serpent figurehead looms over the bow, cutting through the dense morning mist. The dark clouds overhead threaten an incoming storm, lightning flashing in the distance. Seagulls cry out, circling above as if warning of what lies ahead. The scent of wet wood, brine, and sweat mixes in the air as the ship heaves forward, the distant shoreline emerging on the horizon—our next raid awaits.\\n\\n\n📌 AI-Generated Output (Example for “POV: You’re a Soldier in the Trenches of World War I”)\\n\nPOV: You’re a Soldier in the Trenches of World War I\\n\nFirst-person view POV GoPro shot of my dirt-covered hands gripping a bolt-action rifle, my breath fogging against the freezing air. My uniform is soaked in mud, the damp fabric clinging to my skin. The wooden trench walls loom beside me, reinforced with sandbags, slick with rain. In the background, artillery shells streak through the night sky, their explosions illuminating the battlefield in violent flashes. The ground trembles with each impact, shaking loose debris from above. Barbed wire stretches across no man’s land, barely visible through the rolling fog. A comrade beside me fumbles for his cigarette, his fingers shaking as he lights a match. Machine gun fire rattles in the distance, muffled by the pounding rain. The acrid scent of gunpowder and rotting wood hangs in the air. A whistle pierces through the chaos—the signal to charge. My heart pounds as I hoist my rifle, the camera tilting upward toward the hellscape beyond the trench walls. \\n\\n\\n\nFINAL REMINDER:\\n\n- Output MUST be less than 950 characters\\n\n- no new line, everything in single paragraph\\n\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        -1560,
+        260
+      ],
+      "id": "63b917e2-c403-4bb1-a4be-efdea0850051",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        -1340,
+        480
+      ],
+      "id": "99633a29-ba99-4bf3-9c24-a34827273295",
+      "name": "Structured Output Parser"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PyAPI Post": {
+      "main": [
+        [
+          {
+            "node": "PyAPI Get",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PyAPI Get": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Runway Task API": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Runway POST": {
+      "main": [
+        [
+          {
+            "node": "Runway Task API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Runway Task API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Runway POST",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "PyAPI Get",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "PyAPI Post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "fcd4fb4d-2539-4c18-98b9-46af9bc96d18",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4275106c8fd02c2533edab3f7741b7db420af0691c825fa5d46bbabd00ca51b7"
+  },
+  "id": "GrztxjpUcJEtgqNH",
+  "tags": [
+    {
+      "createdAt": "2025-06-09T08:00:01.335Z",
+      "updatedAt": "2025-06-09T08:00:01.335Z",
+      "id": "sG8RDxpp2vurHltb",
+      "name": "Youtube"
+    }
+  ]
+}
