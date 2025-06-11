@@ -29,9 +29,12 @@ This kind of system is ideal for businesses and creators aiming to produce consi
 
 
 Cost Breakdown: ($)
-AI Tool/Model  	               5 sec duration   10 sec duration
-Prompt(Open AI)	               0.01	            0.01
-1- Image Generation (Flux)	   0.015	          0.015
-1- Video Generation (Runway)   0.25	            0.5
+5 sec duration: 0.275
+Prompt(Open AI)	               0.01
+1- Image Generation (Flux)	   0.015
+1- Video Generation (Runway)   0.25
 
-Total	                         0.275	          0.525
+10 sec duration: 0.525
+Prompt(Open AI)	               0.01
+1- Image Generation (Flux)	   0.015
+1- Video Generation (Runway)   0.5
