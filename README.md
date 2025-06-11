@@ -28,13 +28,15 @@ The system updates the original Google Sheet with links to the generated image a
 This kind of system is ideal for businesses and creators aiming to produce consistent, eye-catching content without manual design work.
 
 
-Cost Breakdown: ($)
+Cost Breakdown($):
+
+
 5 sec duration: 0.275
-Prompt(Open AI)	               0.01
-1- Image Generation (Flux)	   0.015
-1- Video Generation (Runway)   0.25
+
+Prompt(Open AI) 0.01 | 1- Image Generation (Flux)	0.015 | 1- Video Generation (Runway)   0.25
+
 
 10 sec duration: 0.525
-Prompt(Open AI)	               0.01
-1- Image Generation (Flux)	   0.015
-1- Video Generation (Runway)   0.5
+
+Prompt(Open AI) 0.01 | 1- Image Generation (Flux)	0.015 | 1- Video Generation (Runway)   0.50
+
